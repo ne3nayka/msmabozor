@@ -43,11 +43,23 @@
             max-width: 100%;
             margin-top: 5px;
         }
+        button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background-color: #0088cc;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #006699;
+        }
     </style>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
-    <h1>Эълонларингиз</h1>
+    <h1>MSMA Bozor - Эълонларингиз</h1>
     <div class="ad-list" id="ad-list"></div>
     <div id="ad-details"></div>
 
@@ -55,12 +67,13 @@
         Telegram.WebApp.ready();
 
         // Получаем данные от бота
-        const ads = Telegram.WebApp.initDataUnsafe.ads || [];
+        const initData = Telegram.WebApp.initDataUnsafe || {};
+        const ads = initData.ads || [];
 
         const adList = document.getElementById('ad-list');
         const adDetails = document.getElementById('ad-details');
 
-        if (ads.length === 0) {
+        if (!ads || ads.length === 0) {
             adList.innerHTML = '<p>Сизда эълонлар йўқ.</p>';
         } else {
             ads.forEach(ad => {
@@ -75,6 +88,7 @@
         function showAdDetails(ad) {
             adDetails.style.display = 'block';
             adList.style.display = 'none';
+            const photos = ad.photos.split(',').filter(photo => photo.trim() !== '');
             adDetails.innerHTML = `
                 <h2>Эълон ${ad.unique_id}</h2>
                 <p><b>Категория:</b> ${ad.category}</p>
@@ -83,7 +97,7 @@
                 <p><b>Нарх:</b> ${ad.price} сўм</p>
                 <p><b>Вилоят:</b> ${ad.region}</p>
                 <p><b>Телефон:</b> <a href="tel:+${ad.phone}">+${ad.phone}</a></p>
-                ${ad.photos ? ad.photos.split(',').map(photo => `<img src="${photo}" alt="Photo" class="photo">`).join('') : ''}
+                ${photos.length > 0 ? photos.map(photo => `<img src="${photo}" alt="Photo" class="photo">`).join('') : '<p>Расмлар йўқ</p>'}
                 <button onclick="backToList()">Орқага</button>
             `;
         }
